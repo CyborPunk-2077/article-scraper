@@ -1,0 +1,29 @@
+﻿# EC2 Deployment Backup
+Date: 2025-10-16 10:55:30
+EC2 Host: 54.82.140.246
+User: ec2-user
+Service: bock-scraper
+Port: 5000
+URL: http://54.82.140.246:5000
+
+## Files Backed Up:
+- web_server_ec2.py (Flask backend)
+- index.html (Frontend UI)
+- Health Text-01.png (Logo)
+- ultimate_scraper_v2.py (Scraper engine)
+- bock-scraper.service (Systemd service)
+- requirements_web.txt (Web virtualenv packages)
+- requirements_scraper.txt (Scraper virtualenv packages)
+- summary/ (AI summarizer module)
+- ultimate_scraper_v2.log (Scraper logs)
+
+## S3 Buckets:
+- bockscraper (scraped articles)
+- bockscraper1 (text conversions)
+- bockscraper2 (AI summaries)
+
+## To Restore:
+1. Upload files to new EC2 instance
+2. Install dependencies from requirements files
+3. Copy systemd service to /etc/systemd/system/
+4. Enable and start service

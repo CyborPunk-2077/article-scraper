@@ -1,0 +1,14 @@
+﻿[Unit]
+Description=BOCK Scraper Web Interface
+After=network.target
+
+[Service]
+User=ec2-user
+WorkingDirectory=/home/ec2-user
+Environment="PATH=/home/ec2-user/web_venv/bin"
+ExecStart=/home/ec2-user/web_venv/bin/gunicorn -w 4 -b 0.0.0.0:5000 web_server_ec2:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

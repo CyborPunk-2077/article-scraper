@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOCK Scraper - Control Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #F5C242 0%, #8E8E8E 50%, #3C3C3C 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .view-bucket-btn {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-bucket-btn:hover {
+            background: white;
+            color: #2c3e50;
+        }
+
+        .bucket-dropdown {
+            position: absolute;
+            right: 30px;
+            top: 100%;
+            margin-top: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: none;
+            z-index: 1000;
+        }
+
+        .bucket-dropdown.show {
+            display: block;
+        }
+
+        .bucket-option {
+            padding: 15px 25px;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .bucket-option:last-child {
+            border-bottom: none;
+        }
+
+        .bucket-option:hover {
+            background: #ecf0f1;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .file-browser {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .breadcrumb-item {
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb-item:hover {
+            color: #3498db;
+        }
+
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .file-item, .folder-item {
+            display: grid;
+            grid-template-columns: 40px 2fr 1fr 1fr 100px;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-item:hover, .folder-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .file-icon {
+            font-size: 1.5rem;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .file-size {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .file-date {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .download-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s ease;
+        }
+
+        .download-btn:hover {
+            background: #2980b9;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .tabs {
+            display: flex;
+            background: #ecf0f1;
+            border-bottom: 2px solid #bdc3c7;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #ecf0f1;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #34495e;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab:hover {
+            background: #d5dbdb;
+        }
+
+        .tab.active {
+            background: white;
+            color: #3498db;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #3498db;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            min-height: 600px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Tab 1 - Scraping */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .scrape-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .scrape-form {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .scrape-form h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .status-panel {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .status-panel h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-box .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+
+        .stat-box .label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 30px;
+            background: #ecf0f1;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db 0%, #2ecc71 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .log-container {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .log-line {
+            margin-bottom: 5px;
+            padding: 3px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .log-line.info {
+            color: #3498db;
+        }
+
+        .log-line.success {
+            color: #2ecc71;
+        }
+
+        .log-line.warning {
+            color: #f39c12;
+        }
+
+        .log-line.error {
+            color: #e74c3c;
+        }
+
+        /* Tab 2 - Convert to Text */
+        .convert-section {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .convert-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .convert-section p {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .convert-form {
+            background: #f8f9fa;
+            padding: 40px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+
+        .info-box p {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        /* Tab 3 - Empty for friend */
+        .empty-tab {
+            text-align: center;
+            padding: 100px 40px;
+        }
+
+        .empty-tab h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .empty-tab p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        /* Scrollbar styling */
+        .log-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .log-container::-webkit-scrollbar-track {
+            background: #34495e;
+        }
+
+        .log-container::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 4px;
+        }
+
+        .log-container::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
+
+        /* Loading animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="Health Text-01.png" alt="BOCK Scraper" style="max-height: 80px; margin-bottom: 10px;">
+            <p>Web Scraping & Data Processing Control Panel</p>
+            <button class="view-bucket-btn" onclick="toggleBucketDropdown()">
+                📁 View Bucket
+            </button>
+            <div class="bucket-dropdown" id="bucketDropdown">
+                <div class="bucket-option" onclick="openBucketModal('bockscraper')">
+                    📦 bockscraper (Articles & Images)
+                </div>
+                <div class="bucket-option" onclick="openBucketModal('bockscraper1')">
+                    📄 bockscraper1 (Text Files)
+                </div>
+                <div class="bucket-option" onclick="openBucketModal('bockscraper2')">
+                    🤖 bockscraper2 (AI Summaries)
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="openTab(event, 'tab1')">📊 Scrape Articles</button>
+            <button class="tab" onclick="openTab(event, 'tab2')">📝 Convert to Text</button>
+            <button class="tab" onclick="openTab(event, 'tab3')">🤖 AI Summarization</button>
+        </div>
+
+        <!-- Tab 1: Scraping -->
+        <div id="tab1" class="tab-content active">
+            <div class="scrape-section">
+                <div class="scrape-form">
+                    <h2>Scraping Configuration</h2>
+                    <form id="scrapeForm">
+                        <div class="form-group">
+                            <label for="websiteUrl">Website URL</label>
+                            <input type="url" id="websiteUrl" placeholder="https://example.com/news" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="numArticles">Number of Articles</label>
+                            <input type="number" id="numArticles" value="10" min="1" max="500" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="scrapeBtn">
+                            Start Scraping
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="stopBtn" disabled>
+                            Stop Scraping
+                        </button>
+                    </form>
+                </div>
+
+                <div class="status-panel">
+                    <h2>Status & Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="value" id="articlesFound">0</div>
+                            <div class="label">Articles Found</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="value" id="articlesSaved">0</div>
+                            <div class="label">Articles Saved</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="value" id="imagesFound">0</div>
+                            <div class="label">Images Saved</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="value" id="timeElapsed">00:00</div>
+                            <div class="label">Time Elapsed</div>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar">0%</div>
+                    </div>
+                    <div class="log-container" id="logContainer">
+                        <div class="log-line info">BOCK Scraper Ready</div>
+                        <div class="log-line info">Waiting for scraping job...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Convert to Text -->
+        <div id="tab2" class="tab-content">
+            <div class="convert-section">
+                <h2>Convert JSON to Text</h2>
+                <p>Convert scraped article JSON files to plain text format and save to a separate S3 bucket.</p>
+                
+                <div class="convert-form">
+                    <div class="info-box">
+                        <p><strong>ℹ️ Info:</strong> This will convert all JSON files from the scraping bucket to plain text files and save them in a separate S3 bucket.</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sourceSession">Source Session ID (from scraping)</label>
+                        <input type="text" id="sourceSession" placeholder="session_1234567890" required>
+                    </div>
+                    
+                    <div class="info-box" style="background: #e8f8f5; border-left-color: #27ae60;">
+                        <p><strong>📦 Target Bucket:</strong> Text files will be saved to <code>bockscraper1</code></p>
+                    </div>
+                    
+                    <button type="button" class="btn btn-primary" id="convertBtn" onclick="convertToText()">
+                        Convert to Text
+                    </button>
+                    
+                    <div id="convertStatus" style="margin-top: 20px;"></div>
+                    
+                    <div class="log-container" id="convertLogContainer" style="margin-top: 20px; height: 300px;">
+                        <div class="log-line info">Ready to convert files...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: AI Summarization -->
+        <div id="tab3" class="tab-content">
+            <div class="convert-section">
+                <h2>🤖 AI Summarization</h2>
+                <p>Generate AI-powered summaries for both article text and images using advanced deep learning models.</p>
+                
+                <div class="convert-form">
+                    <div class="info-box">
+                        <p><strong>ℹ️ How it works:</strong> This uses BART (text) and ViT-GPT2 (images) models to create concise summaries.</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="summarySession">Source Session ID (from scraping)</label>
+                        <input type="text" id="summarySession" placeholder="session_1234567890" required>
+                    </div>
+                    
+                    <div class="info-box" style="background: #e8f4f8; border-left-color: #3498db;">
+                        <p><strong>📥 Input Bucket:</strong> <code>bockscraper</code> (scraped articles)</p>
+                    </div>
+                    
+                    <div class="info-box" style="background: #e8f8f5; border-left-color: #27ae60;">
+                        <p><strong>📤 Output Bucket:</strong> <code>bockscraper2</code> (AI summaries)</p>
+                        <p style="margin-top: 10px; font-size: 0.9em;">Each article folder will contain:</p>
+                        <ul style="margin: 5px 0 0 20px; font-size: 0.9em;">
+                            <li><code>article_text_summary.json</code> - Text summary</li>
+                            <li><code>image_summary.json</code> - Image caption</li>
+                        </ul>
+                    </div>
+                    
+                    <button type="button" class="btn btn-primary" id="summarizeBtn" onclick="startSummarization()">
+                        🤖 Generate AI Summaries
+                    </button>
+                    
+                    <!-- Statistics Display -->
+                    <div id="summaryStatsContainer" style="margin-top: 20px; display: none;">
+                        <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+                            <div class="stat-box">
+                                <div class="value" id="textSummaries">0</div>
+                                <div class="label">Text Summaries</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="value" id="imageSummaries">0</div>
+                                <div class="label">Image Captions</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="value" id="foldersProcessed">0</div>
+                                <div class="label">Folders Processed</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="log-container" id="summaryLogContainer" style="margin-top: 20px; height: 400px;">
+                        <div class="log-line info">🤖 AI Summarization Ready</div>
+                        <div class="log-line info">Using BART (facebook/bart-large-cnn) for text</div>
+                        <div class="log-line info">Using ViT-GPT2 (nlpconnect/vit-gpt2-image-captioning) for images</div>
+                        <div class="log-line info">Ready to generate summaries...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- S3 Bucket Browser Modal -->
+    <div class="modal" id="bucketModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📁 <span id="modalBucketName"></span></h2>
+                <button class="close-btn" onclick="closeBucketModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="file-browser">
+                    <div class="breadcrumb" id="breadcrumb">
+                        <span class="breadcrumb-item" onclick="navigateToPath('')">🏠 Root</span>
+                    </div>
+                    <div id="fileListContainer">
+                        <div class="loading">Loading files...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let scrapingActive = false;
+        let startTime = null;
+        let timerInterval = null;
+        let logPollingInterval = null;
+        let lastLogIndex = 0;
+        
+        // S3 Browser state
+        let currentBucket = '';
+        let currentPath = '';
+
+        // Tab switching
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        // Add log line
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const logLine = document.createElement('div');
+            logLine.className = `log-line ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            logLine.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logLine);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // Add convert log
+        function addConvertLog(message, type = 'info') {
+            const logContainer = document.getElementById('convertLogContainer');
+            const logLine = document.createElement('div');
+            logLine.className = `log-line ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            logLine.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logLine);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // Update timer
+        function updateTimer() {
+            if (startTime) {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                document.getElementById('timeElapsed').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // Update progress bar
+        function updateProgress(percentage) {
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+        }
+
+        // Start scraping
+        document.getElementById('scrapeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (scrapingActive) {
+                alert('Scraping is already in progress!');
+                return;
+            }
+            
+            const url = document.getElementById('websiteUrl').value;
+            const maxArticles = parseInt(document.getElementById('numArticles').value);
+            
+            scrapingActive = true;
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+            lastLogIndex = 0;
+            
+            document.getElementById('scrapeBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            
+            // Clear previous logs
+            document.getElementById('logContainer').innerHTML = '';
+            addLog('Starting scraping job...', 'info');
+            
+            try {
+                const response = await fetch('/start_scraping', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        url: url,
+                        maxArticles: maxArticles
+                    })
+                });
+                
+                if (response.ok) {
+                    addLog('Scraping job started successfully!', 'success');
+                    startLogPolling();
+                } else {
+                    const error = await response.json();
+                    addLog('Error: ' + error.error, 'error');
+                    resetScrapingState();
+                }
+            } catch (error) {
+                addLog('Error: ' + error.message, 'error');
+                resetScrapingState();
+            }
+        });
+
+        // Stop scraping
+        document.getElementById('stopBtn').addEventListener('click', async function() {
+            try {
+                await fetch('/stop_scraping', { method: 'POST' });
+                addLog('Stopping scraping job...', 'warning');
+                resetScrapingState();
+            } catch (error) {
+                addLog('Error stopping: ' + error.message, 'error');
+            }
+        });
+
+        // Poll for status updates
+        function startLogPolling() {
+            logPollingInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/get_status');
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // Update statistics
+                        document.getElementById('articlesFound').textContent = data.articlesFound || 0;
+                        document.getElementById('articlesSaved').textContent = data.articlesSaved || 0;
+                        document.getElementById('imagesFound').textContent = data.imagesFound || 0;
+                        
+                        // Update progress
+                        updateProgress(data.progress || 0);
+                        
+                        // Add new logs
+                        if (data.logs && data.logs.length > lastLogIndex) {
+                            for (let i = lastLogIndex; i < data.logs.length; i++) {
+                                const log = data.logs[i];
+                                addLog(log.message, log.type);
+                            }
+                            lastLogIndex = data.logs.length;
+                        }
+                        
+                        // Check if completed
+                        if (data.completed) {
+                            addLog('Scraping completed successfully!', 'success');
+                            addLog(`Session ID: ${data.sessionId}`, 'info');
+                            document.getElementById('sourceSession').value = data.sessionId;
+                            document.getElementById('summarySession').value = data.sessionId;
+                            resetScrapingState();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error polling status:', error);
+                }
+            }, 2000);
+        }
+
+        // Reset scraping state
+        function resetScrapingState() {
+            scrapingActive = false;
+            startTime = null;
+            document.getElementById('scrapeBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
+            if (logPollingInterval) {
+                clearInterval(logPollingInterval);
+                logPollingInterval = null;
+            }
+        }
+
+        // Convert to text
+        async function convertToText() {
+            const sourceSession = document.getElementById('sourceSession').value;
+            
+            if (!sourceSession) {
+                alert('Please enter the source session ID!');
+                return;
+            }
+            
+            const convertBtn = document.getElementById('convertBtn');
+            convertBtn.disabled = true;
+            convertBtn.innerHTML = '<span class="spinner"></span> Converting...';
+            
+            document.getElementById('convertLogContainer').innerHTML = '';
+            lastConvertLogIndex = 0;
+            addConvertLog('Starting conversion process...', 'info');
+            
+            try {
+                const response = await fetch('/convert_to_text', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        sourceSession: sourceSession
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addConvertLog('Conversion started successfully!', 'success');
+                    
+                    // Poll for conversion status
+                    pollConversionStatus();
+                } else {
+                    const error = await response.json();
+                    addConvertLog('Error: ' + error.error, 'error');
+                    convertBtn.disabled = false;
+                    convertBtn.textContent = 'Convert to Text';
+                }
+            } catch (error) {
+                addConvertLog('Error: ' + error.message, 'error');
+                convertBtn.disabled = false;
+                convertBtn.textContent = 'Convert to Text';
+            }
+        }
+
+        // Poll conversion status
+        let conversionPolling = false;
+        let lastConvertLogIndex = 0;
+        
+        function pollConversionStatus() {
+            if (conversionPolling) return; // Prevent multiple polls
+            conversionPolling = true;
+            
+            const pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/conversion_status');
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // Add only new logs
+                        if (data.logs && data.logs.length > lastConvertLogIndex) {
+                            for (let i = lastConvertLogIndex; i < data.logs.length; i++) {
+                                const log = data.logs[i];
+                                addConvertLog(log.message, log.type);
+                            }
+                            lastConvertLogIndex = data.logs.length;
+                        }
+                        
+                        if (data.completed) {
+                            clearInterval(pollInterval);
+                            conversionPolling = false;
+                            lastConvertLogIndex = 0;
+                            
+                            const convertBtn = document.getElementById('convertBtn');
+                            convertBtn.disabled = false;
+                            convertBtn.textContent = 'Convert to Text';
+                        }
+                        
+                        if (data.error) {
+                            clearInterval(pollInterval);
+                            conversionPolling = false;
+                            lastConvertLogIndex = 0;
+                            
+                            const convertBtn = document.getElementById('convertBtn');
+                            convertBtn.disabled = false;
+                            convertBtn.textContent = 'Convert to Text';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error polling conversion:', error);
+                }
+            }, 2000);
+        }
+
+        // S3 Bucket Browser Functions
+        function toggleBucketDropdown() {
+            const dropdown = document.getElementById('bucketDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('bucketDropdown');
+            const button = document.querySelector('.view-bucket-btn');
+            if (!dropdown.contains(event.target) && !button.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        async function openBucketModal(bucketName) {
+            currentBucket = bucketName;
+            currentPath = '';
+            
+            document.getElementById('modalBucketName').textContent = bucketName;
+            document.getElementById('bucketModal').classList.add('show');
+            document.getElementById('bucketDropdown').classList.remove('show');
+            
+            await loadBucketContents();
+        }
+
+        function closeBucketModal() {
+            document.getElementById('bucketModal').classList.remove('show');
+        }
+
+        async function loadBucketContents() {
+            const container = document.getElementById('fileListContainer');
+            container.innerHTML = '<div class="loading">Loading files...</div>';
+            
+            try {
+                const response = await fetch('/list_bucket', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        bucket: currentBucket,
+                        prefix: currentPath
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayFiles(data.folders, data.files);
+                    updateBreadcrumb();
+                } else {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">❌</div><p>Error loading files</p></div>';
+                }
+            } catch (error) {
+                console.error('Error loading bucket:', error);
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">❌</div><p>Error loading files</p></div>';
+            }
+        }
+
+        function displayFiles(folders, files) {
+            const container = document.getElementById('fileListContainer');
+            
+            if (folders.length === 0 && files.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📂</div><p>This folder is empty</p></div>';
+                return;
+            }
+            
+            let html = '<div class="file-list">';
+            
+            // Display folders first
+            folders.forEach(folder => {
+                html += `
+                    <div class="folder-item" onclick="navigateToFolder('${folder.name}')">
+                        <div class="file-icon">📁</div>
+                        <div class="file-name">${folder.name}</div>
+                        <div class="file-size">—</div>
+                        <div class="file-date">—</div>
+                        <div></div>
+                    </div>
+                `;
+            });
+            
+            // Display files
+            files.forEach(file => {
+                const icon = getFileIcon(file.name);
+                html += `
+                    <div class="file-item">
+                        <div class="file-icon">${icon}</div>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
+                        <div class="file-date">${formatDate(file.lastModified)}</div>
+                        <button class="download-btn" onclick="downloadFile('${file.key}', '${file.name}')">⬇ Download</button>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function navigateToFolder(folderName) {
+            if (currentPath) {
+                currentPath += '/' + folderName;
+            } else {
+                currentPath = folderName;
+            }
+            loadBucketContents();
+        }
+
+        function navigateToPath(path) {
+            currentPath = path;
+            loadBucketContents();
+        }
+
+        function updateBreadcrumb() {
+            const breadcrumb = document.getElementById('breadcrumb');
+            let html = '<span class="breadcrumb-item" onclick="navigateToPath(\'\')">🏠 Root</span>';
+            
+            if (currentPath) {
+                const parts = currentPath.split('/');
+                let path = '';
+                parts.forEach((part, index) => {
+                    path += (index > 0 ? '/' : '') + part;
+                    const currentPathCopy = path;
+                    html += ` <span style="color: #7f8c8d;">›</span> <span class="breadcrumb-item" onclick="navigateToPath('${currentPathCopy}')">${part}</span>`;
+                });
+            }
+            
+            breadcrumb.innerHTML = html;
+        }
+
+        async function downloadFile(fileKey, fileName) {
+            try {
+                const response = await fetch('/download_file', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        bucket: currentBucket,
+                        key: fileKey
+                    })
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else {
+                    alert('Error downloading file');
+                }
+            } catch (error) {
+                console.error('Error downloading file:', error);
+                alert('Error downloading file');
+            }
+        }
+
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            if (ext === 'json') return '📄';
+            if (ext === 'txt') return '📝';
+            if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return '🖼️';
+            if (ext === 'pdf') return '📕';
+            return '📎';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        // AI Summarization Functions
+        function addSummaryLog(message, type = 'info') {
+            const logContainer = document.getElementById('summaryLogContainer');
+            const logLine = document.createElement('div');
+            logLine.className = `log-line ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            logLine.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logLine);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        async function startSummarization() {
+            const sourceSession = document.getElementById('summarySession').value;
+            
+            if (!sourceSession) {
+                alert('Please enter the source session ID!');
+                return;
+            }
+            
+            const summarizeBtn = document.getElementById('summarizeBtn');
+            summarizeBtn.disabled = true;
+            summarizeBtn.innerHTML = '<span class="spinner"></span> Generating AI Summaries...';
+            
+            // Show stats container
+            document.getElementById('summaryStatsContainer').style.display = 'block';
+            
+            document.getElementById('summaryLogContainer').innerHTML = '';
+            lastSummaryLogIndex = 0;
+            addSummaryLog('Starting AI summarization process...', 'info');
+            addSummaryLog('⚠️ This may take several minutes, especially on first run', 'warning');
+            
+            try {
+                const response = await fetch('/generate_summaries', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        sourceSession: sourceSession
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addSummaryLog('Summarization started successfully!', 'success');
+                    
+                    // Poll for summarization status
+                    pollSummarizationStatus();
+                } else {
+                    const error = await response.json();
+                    addSummaryLog('Error: ' + error.error, 'error');
+                    summarizeBtn.disabled = false;
+                    summarizeBtn.innerHTML = '🤖 Generate AI Summaries';
+                }
+            } catch (error) {
+                addSummaryLog('Error: ' + error.message, 'error');
+                summarizeBtn.disabled = false;
+                summarizeBtn.innerHTML = '🤖 Generate AI Summaries';
+            }
+        }
+
+        // Poll summarization status
+        let summarizationPolling = false;
+        let lastSummaryLogIndex = 0;
+        
+        function pollSummarizationStatus() {
+            if (summarizationPolling) return; // Prevent multiple polls
+            summarizationPolling = true;
+            
+            const pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/summarization_status');
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // Update statistics
+                        document.getElementById('textSummaries').textContent = data.textSummaries || 0;
+                        document.getElementById('imageSummaries').textContent = data.imageSummaries || 0;
+                        document.getElementById('foldersProcessed').textContent = data.totalFolders || 0;
+                        
+                        // Add only new logs
+                        if (data.logs && data.logs.length > lastSummaryLogIndex) {
+                            for (let i = lastSummaryLogIndex; i < data.logs.length; i++) {
+                                const log = data.logs[i];
+                                addSummaryLog(log.message, log.type);
+                            }
+                            lastSummaryLogIndex = data.logs.length;
+                        }
+                        
+                        if (data.completed) {
+                            clearInterval(pollInterval);
+                            summarizationPolling = false;
+                            lastSummaryLogIndex = 0;
+                            
+                            const summarizeBtn = document.getElementById('summarizeBtn');
+                            summarizeBtn.disabled = false;
+                            summarizeBtn.innerHTML = '🤖 Generate AI Summaries';
+                            
+                            addSummaryLog('✅ All summaries generated successfully!', 'success');
+                        }
+                        
+                        if (data.error) {
+                            clearInterval(pollInterval);
+                            summarizationPolling = false;
+                            lastSummaryLogIndex = 0;
+                            
+                            const summarizeBtn = document.getElementById('summarizeBtn');
+                            summarizeBtn.disabled = false;
+                            summarizeBtn.innerHTML = '🤖 Generate AI Summaries';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error polling summarization:', error);
+                }
+            }, 3000); // Poll every 3 seconds (AI processing takes longer)
+        }
+
+        // Auto-populate summary session from scraping
+        function autoFillSummarySession(sessionId) {
+            if (sessionId) {
+                document.getElementById('summarySession').value = sessionId;
+            }
+        }
+
+        // Update the scraping completion handler to auto-fill summary session
+        const originalGetStatus = window.fetch;
+    </script>
+</body>
+</html>
